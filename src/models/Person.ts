@@ -1,6 +1,6 @@
 export class Person {
   name: string;
-  // wallet_balance: number;
+  wallet_balance: number;
 
   constructor(name: string, wallet_balance?: number) {
     if (name.length < 2) {
@@ -10,6 +10,6 @@ export class Person {
       throw new Error("Name should not be longer than 20 characters");
     }
     this.name = name;
-    // this.wallet_balance = wallet_balance || 0;
+    this.wallet_balance = wallet_balance || 0;
   }
 }
