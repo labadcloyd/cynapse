@@ -39,3 +39,63 @@ test("Angpao should ask for the list of friends", async () => {
   expect(AngpaoAlgo.friends[1].name).toBe("Lance");
   expect(AngpaoAlgo.friends[2].name).toBe("Martus");
 });
+
+test("Angpao should throw error when amount to distribute is not a number", async () => {
+  const mockAsk = jest
+    .fn()
+    .mockResolvedValueOnce("Cloyd")
+    .mockResolvedValueOnce("20")
+    .mockResolvedValueOnce("Brew")
+    .mockResolvedValueOnce("Y")
+    .mockResolvedValueOnce("Lance")
+    .mockResolvedValueOnce("y")
+    .mockResolvedValueOnce("Martus")
+    .mockResolvedValueOnce("N")
+    .mockResolvedValueOnce("2f0");
+  const AngpaoAlgo = new Angpao(mockAsk, CalcDistribution);
+  await AngpaoAlgo.init();
+  await AngpaoAlgo.initializeFriends();
+  expect(async () => {
+    await AngpaoAlgo.distributeAmount();
+  }).rejects.toThrow("Amount must be a number");
+});
+
+test("Angpao should throw error when amount to distribute is greater than current balance", async () => {
+  const mockAsk = jest
+    .fn()
+    .mockResolvedValueOnce("Cloyd")
+    .mockResolvedValueOnce("20")
+    .mockResolvedValueOnce("Brew")
+    .mockResolvedValueOnce("Y")
+    .mockResolvedValueOnce("Lance")
+    .mockResolvedValueOnce("y")
+    .mockResolvedValueOnce("Martus")
+    .mockResolvedValueOnce("N")
+    .mockResolvedValueOnce("30");
+  const AngpaoAlgo = new Angpao(mockAsk, CalcDistribution);
+  await AngpaoAlgo.init();
+  await AngpaoAlgo.initializeFriends();
+  expect(async () => {
+    await AngpaoAlgo.distributeAmount();
+  }).rejects.toThrow("Amount must not be greater than your wallet balance");
+});
+
+test("Angpao should throw error when amount to distribute is less than 0", async () => {
+  const mockAsk = jest
+    .fn()
+    .mockResolvedValueOnce("Cloyd")
+    .mockResolvedValueOnce("20")
+    .mockResolvedValueOnce("Brew")
+    .mockResolvedValueOnce("Y")
+    .mockResolvedValueOnce("Lance")
+    .mockResolvedValueOnce("y")
+    .mockResolvedValueOnce("Martus")
+    .mockResolvedValueOnce("N")
+    .mockResolvedValueOnce("0");
+  const AngpaoAlgo = new Angpao(mockAsk, CalcDistribution);
+  await AngpaoAlgo.init();
+  await AngpaoAlgo.initializeFriends();
+  expect(async () => {
+    await AngpaoAlgo.distributeAmount();
+  }).rejects.toThrow("Amount must not be less than 0");
+});

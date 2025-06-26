@@ -39,4 +39,19 @@ export class Angpao {
       repeat = await this.ask("Do you want to add more friends? (Y/N)");
     }
   }
+
+  async distributeAmount() {
+    console.log("Let's distribute your money!");
+    const raw_amount = await this.ask("How much do you want to distribute? ");
+    if (Number.isNaN(Number(raw_amount))) {
+      throw new Error("Amount must be a number");
+    }
+    const amount = Number(raw_amount);
+    if (amount > this.owner.wallet_balance) {
+      throw new Error("Amount must not be greater than your wallet balance");
+    }
+    if (amount <= 0) {
+      throw new Error("Amount must not be less than 0");
+    }
+  }
 }
