@@ -54,6 +54,7 @@ export class Angpao {
    */
   async distributeAmount() {
     console.log("Let's distribute your money!");
+    console.log(`Your total balance is: $${this.owner.wallet_balance}`);
     const raw_amount = await this.ask("How much do you want to distribute? ");
     // --- Data Validation
     if (Number.isNaN(Number(raw_amount))) {
@@ -92,5 +93,11 @@ export class Angpao {
         return friend;
       });
     }
+    console.log();
+    console.log(`Total amount given: $${raw_amount}`);
+    console.log();
+    console.log(
+      `Hello ${this.owner.name}, Your remaining balance is: $${this.owner.wallet_balance}`
+    );
   }
 }
