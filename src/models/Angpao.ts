@@ -42,10 +42,20 @@ export class Angpao {
 
   /**
    * The core algorithm behind the distribution of money
+   *
+   * This loops through each friend, generates the random number
+   * within the 3 decimal point, deducts the amount (specified to be distributed),
+   * which is then given to the friend. To prevent having remaining funds, the last
+   * friend in the loop will receive the remaining balance.
+   *
+   * Although this algorithm is fairly simple, there is a very likely the first few people
+   * will receive the highest amounts since as the loop goes through, the remaining balance
+   * becomes smaller and smaller.
    */
   async distributeAmount() {
     console.log("Let's distribute your money!");
     const raw_amount = await this.ask("How much do you want to distribute? ");
+    // --- Data Validation
     if (Number.isNaN(Number(raw_amount))) {
       throw new Error("Amount must be a number");
     }
@@ -58,19 +68,26 @@ export class Angpao {
       throw new Error("Amount must not be less than 0");
     }
 
+    // --- Deducting the amount to the owner
     this.owner.wallet_balance = this.owner.wallet_balance - balance;
     if (this.friends.length > 0) {
+      // --- Looping through each friend
       this.friends.map((friend, i) => {
         const lastChild = i === this.friends.length - 1;
+        // --- Last child receives the remaining balance
         if (lastChild) {
           friend.wallet_balance = balance;
           console.log(`Gave ${friend.name} $${balance}`);
           balance = 0;
           return friend;
         }
+        // --- The random number generated is within 3 decimals (i.e. 2.412)
         const calculatedAmount = this.calcAmount(balance);
         console.log(`Gave ${friend.name} $${calculatedAmount}`);
         friend.wallet_balance = calculatedAmount;
+        // --- The remaining balance gets reduced as the loop goes through
+        // --- As this gets reduced, so does the possible amount to be given
+        // to the next friend
         balance = balance - calculatedAmount;
         return friend;
       });
