@@ -40,18 +40,40 @@ export class Angpao {
     }
   }
 
+  /**
+   * The core algorithm behind the distribution of money
+   */
   async distributeAmount() {
     console.log("Let's distribute your money!");
     const raw_amount = await this.ask("How much do you want to distribute? ");
     if (Number.isNaN(Number(raw_amount))) {
       throw new Error("Amount must be a number");
     }
-    const amount = Number(raw_amount);
-    if (amount > this.owner.wallet_balance) {
+    let balance = Number(raw_amount);
+
+    if (balance > this.owner.wallet_balance) {
       throw new Error("Amount must not be greater than your wallet balance");
     }
-    if (amount <= 0) {
+    if (balance <= 0) {
       throw new Error("Amount must not be less than 0");
+    }
+
+    this.owner.wallet_balance = this.owner.wallet_balance - balance;
+    if (this.friends.length > 0) {
+      this.friends.map((friend, i) => {
+        const lastChild = i === this.friends.length - 1;
+        if (lastChild) {
+          friend.wallet_balance = balance;
+          console.log(`Gave ${friend.name} $${balance}`);
+          balance = 0;
+          return friend;
+        }
+        const calculatedAmount = this.calcAmount(balance);
+        console.log(`Gave ${friend.name} $${calculatedAmount}`);
+        friend.wallet_balance = calculatedAmount;
+        balance = balance - calculatedAmount;
+        return friend;
+      });
     }
   }
 }

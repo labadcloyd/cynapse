@@ -99,3 +99,29 @@ test("Angpao should throw error when amount to distribute is less than 0", async
     await AngpaoAlgo.distributeAmount();
   }).rejects.toThrow("Amount must not be less than 0");
 });
+
+test("Angpao should properly distribute amounts", async () => {
+  const mockAsk = jest
+    .fn()
+    .mockResolvedValueOnce("Cloyd")
+    .mockResolvedValueOnce("20")
+    .mockResolvedValueOnce("Brew")
+    .mockResolvedValueOnce("Y")
+    .mockResolvedValueOnce("Lance")
+    .mockResolvedValueOnce("y")
+    .mockResolvedValueOnce("Martus")
+    .mockResolvedValueOnce("N")
+    .mockResolvedValueOnce("20");
+  const mockCalc = jest.fn().mockReturnValueOnce(5).mockReturnValueOnce(10);
+
+  const AngpaoAlgo = new Angpao(mockAsk, mockCalc);
+  await AngpaoAlgo.init();
+  expect(AngpaoAlgo.owner.wallet_balance).toBe(20);
+  await AngpaoAlgo.initializeFriends();
+  await AngpaoAlgo.distributeAmount();
+  expect(AngpaoAlgo.friends.length).toBe(3);
+  expect(AngpaoAlgo.friends[0].wallet_balance).toBe(5);
+  expect(AngpaoAlgo.friends[1].wallet_balance).toBe(10);
+  expect(AngpaoAlgo.friends[2].wallet_balance).toBe(5);
+  expect(AngpaoAlgo.owner.wallet_balance).toBe(0);
+});
