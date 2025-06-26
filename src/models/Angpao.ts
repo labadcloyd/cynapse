@@ -1,11 +1,15 @@
-import { askQuestion } from "../utils/askQuestion";
 import { Person } from "./Person";
 
 export class Angpao {
   ask: (question: string) => Promise<string>;
+  calcAmount: (balance: number) => number;
   owner!: Person;
-  constructor(ask: (question: string) => Promise<string>) {
+  constructor(
+    ask: (question: string) => Promise<string>,
+    calcAmount: (balance: number) => number
+  ) {
     this.ask = ask;
+    this.calcAmount = calcAmount;
   }
 
   async init() {
